@@ -13,10 +13,10 @@ import datetime as dt
 st.title("Acesso a saúde no Brasil")
 
 # Caminho do arquivo CSV na mesma pasta
-csv_file = "cnes_estabelecimentos.csv"
+csv_file = "cnes_estabelecimentos2.csv"
 
 
-df = pd.read_csv("cnes_estabelecimentos.csv", sep=";", encoding="latin1", low_memory=False)
+df = pd.read_csv("cnes_estabelecimentos2.csv", sep=";", encoding="latin1", low_memory=False)
 
 
 st.markdown("### Até aqui importamos as bibliotecas e subimos o arquivo CSV e verificamos se ele existe no projeto")
@@ -53,3 +53,10 @@ df['UF'] = df['CO_UF'].map(ufs)
 
 # Título da seção
 st.header("Distribuição das Unidades por Estado")
+
+# 1. Gráfico de barras - Contagem de unidades por estado
+contagem_estados = df['UF'].value_counts().sort_index()
+fig1 = px.bar(x=contagem_estados.index, y=contagem_estados.values,
+              labels={'x': 'UF', 'y': 'Quantidade de Unidades'},
+              title='Quantidade de Unidades por Estado')
+st.plotly_chart(fig1)
