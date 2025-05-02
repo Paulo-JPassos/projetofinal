@@ -9,8 +9,27 @@ import plotly.express as px
 import os
 import datetime as dt
 
-# Título do dashboard
-st.title("Acesso a saúde no Brasil")
+
+# Título do projeto
+st.title("📊 Acesso à Saúde no Brasil")
+
+st.markdown("""
+#### Uma análise exploratória dos estabelecimentos de saúde cadastrados no CNES
+
+A estrutura e a distribuição dos serviços de saúde no Brasil revelam muito sobre o acesso da população aos cuidados essenciais. 
+Este painel analítico tem como objetivo visualizar os dados do Cadastro Nacional de Estabelecimentos de Saúde (CNES), destacando padrões por tipo de gestão, esfera administrativa e distribuição geográfica das unidades.
+""")
+
+# Storytelling de abertura
+st.markdown("""
+## 🎯 Objetivo do Projeto
+
+Este painel interativo tem como objetivo apresentar, de maneira visual e acessível, a **distribuição dos estabelecimentos de saúde no Brasil** a partir dos dados públicos do CNES (Cadastro Nacional de Estabelecimentos de Saúde).  
+A proposta é fornecer **insights relevantes** para gestores, pesquisadores e cidadãos, analisando aspectos como localização, esfera administrativa e tipo de gestão das unidades.
+
+---
+""")
+
 
 # Caminho do arquivo CSV na mesma pasta
 csv_file = "cnes_estabelecimentos2.csv"
@@ -19,11 +38,18 @@ csv_file = "cnes_estabelecimentos2.csv"
 df = pd.read_csv("cnes_estabelecimentos2.csv", sep=";", encoding="latin1", low_memory=False)
 
 
-st.markdown("### Até aqui importamos as bibliotecas e subimos o arquivo CSV e verificamos se ele existe no projeto")
+st.markdown("""
+## 📥 Carregamento da Base de Dados
+
+Os dados foram carregados com sucesso a partir do arquivo **`cnes_estabelecimentos2.csv`**, contendo informações sobre os estabelecimentos de saúde em todo o território nacional.
+""")
+
+# Exibe amostra dos dados
+st.markdown("### 🔍 Primeiras linhas dos dados")
 
      # Exibe os dados carregados
 st.markdown("### Dados de Vendas Carregados")
-st.dataframe(df.head(10))
+st.dataframe(df.head(5))
 
 # Seleção de colunas principais
 colunas_utilizadas = [
@@ -34,6 +60,14 @@ colunas_utilizadas = [
 ]
 
 df = df[[col for col in colunas_utilizadas if col in df.columns]]
+
+st.markdown("""
+## 🧹 Tratamento e Preparação dos Dados
+
+Selecionamos apenas as colunas mais relevantes da base original, como o tipo de unidade, esfera administrativa, estado e município.  
+Também realizamos o mapeamento dos códigos de UF para siglas, facilitando a leitura dos gráficos.
+""")
+
 
 # Criação de dicionário de UFs
 ufs = {
@@ -49,6 +83,15 @@ df['UF'] = df['CO_UF'].map(ufs)
 ufs_disponiveis = df["CO_UF"].dropna().unique()
 estado = st.selectbox("Selecione um estado para análise", sorted(ufs_disponiveis))
 df_estado = df[df["CO_UF"] == estado]
+
+
+st.markdown("""
+---
+## 📊 Visualizações Interativas
+
+A seguir, são apresentados diversos gráficos interativos que ilustram a distribuição das unidades de saúde, com base em diferentes critérios de agrupamento e análise.
+""")
+
 
 # Título da seção
 st.header("Distribuição das Unidades por Estado")
@@ -71,24 +114,32 @@ fig3 = px.scatter(x=contagem_estados.index, y=contagem_estados.values,
                   title='Distribuição de Unidades por Estado')
 st.plotly_chart(fig3)
 
-# 4. Mapa de calor por Estado e Tipo de Gestão
-if "DS_TP_GESTAO" in df.columns:
-    heatmap_data1 = df.groupby(["UF", "DS_TP_GESTAO"]).size().reset_index(name='Quantidade')
-    fig4 = px.density_heatmap(heatmap_data1, 
-                              x="UF", y="DS_TP_GESTAO", z="Quantidade", 
-                              color_continuous_scale="Viridis",
-                              title="Mapa de Calor: Estado x Tipo de Gestão")
-    st.plotly_chart(fig4)
-else:
-    st.warning("Coluna 'DS_TP_GESTAO' não encontrada nos dados.")
 
-# 5. Mapa de calor por Estado e Esfera Administrativa
+st.markdown("""
+## 🌡️ Mapa de Calor: Estado x Esfera Administrativa
+
+Este mapa de calor cruza a **Unidade Federativa** com a **Esfera Administrativa** (Municipal, Estadual, Federal ou Privada), permitindo compreender como está distribuída a responsabilidade pela gestão das unidades em cada estado.
+""")
+
+# 4. Mapa de calor por Estado e Esfera Administrativa
 if "DS_ESFERA_ADMINISTRATIVA" in df.columns:
     heatmap_data2 = df.groupby(["UF", "DS_ESFERA_ADMINISTRATIVA"]).size().reset_index(name='Quantidade')
-    fig5 = px.density_heatmap(heatmap_data2, 
+    fig4 = px.density_heatmap(heatmap_data2, 
                               x="UF", y="DS_ESFERA_ADMINISTRATIVA", z="Quantidade", 
                               color_continuous_scale="Blues",
                               title="Mapa de Calor: Estado x Esfera Administrativa")
-    st.plotly_chart(fig5)
+    st.plotly_chart(fig4)
 else:
     st.warning("Coluna 'DS_ESFERA_ADMINISTRATIVA' não encontrada nos dados.")
+
+    # Análise Final
+st.markdown("""
+## 🧾 Conclusões e Reflexões
+
+- Os dados evidenciam uma concentração significativa de unidades em estados mais populosos, como São Paulo e Minas Gerais.
+- A **esfera administrativa predominante** pode variar conforme a política pública local e o modelo de regionalização da saúde.
+- Com base na distribuição por **tipo de gestão**, é possível avaliar se há predominância do SUS ou se existe maior atuação da iniciativa privada em determinadas regiões.
+- O painel pode ser expandido futuramente para incluir indicadores de qualidade, capacidade de atendimento ou cruzamento com dados epidemiológicos regionais.
+
+---
+""")
