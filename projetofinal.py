@@ -72,3 +72,15 @@ fig3 = px.scatter(x=contagem_estados.index, y=contagem_estados.values,
                   labels={'x': 'UF', 'y': 'Quantidade de Unidades'},
                   title='Distribuição de Unidades por Estado')
 st.plotly_chart(fig3)
+
+
+# 4. Mapa de calor por estado e tipo de gestão
+if "DS_TP_GESTAO" in df.columns:
+    heatmap_data = df.groupby(["UF", "DS_TP_GESTAO"]).size().reset_index(name='Quantidade')
+    fig4 = px.density_heatmap(heatmap_data, 
+                              x="UF", y="DS_TP_GESTAO", z="Quantidade", 
+                              color_continuous_scale="Viridis",
+                              title="Distribuição por Estado e Tipo de Gestão")
+    st.plotly_chart(fig4)
+else:
+    st.warning("Coluna 'DS_TP_GESTAO' não encontrada nos dados.")
