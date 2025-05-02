@@ -40,8 +40,12 @@ estado = st.selectbox("Selecione um estado para análise", sorted(ufs))
 
 df_estado = df[df["CO_UF"] == estado]
 
-# Gráfico 1: Tipos de unidade no estado
-st.subheader(f"Distribuição por Tipo de Unidade - {estado}")
-tipo_unidade = df_estado["DS_TIPO_UNIDADE"].value_counts().reset_index()
-fig1 = px.bar(tipo_unidade, x="index", y="DS_TIPO_UNIDADE", labels={"index": "Tipo", "DS_TIPO_UNIDADE": "Quantidade"}, color="index")
-st.plotly_chart(fig1, use_container_width=True)
+# Gráfico 2: Categoria administrativa (privado, público, filantrópico)
+st.subheader(f"Distribuição por Categoria Administrativa - {estado}")
+if "DS_CATEGORIA_UNIDADE" in df_estado.columns:
+    categoria = df_estado["DS_CATEGORIA_UNIDADE"].value_counts().reset_index()
+    fig2 = px.pie(categoria, names="index", values="DS_CATEGORIA_UNIDADE", title="Categoria da Unidade")
+    st.plotly_chart(fig2, use_container_width=True)
+else:
+    st.info("Coluna de categoria administrativa não está disponível neste dataset.")
+
