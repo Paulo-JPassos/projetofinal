@@ -3,12 +3,16 @@
 #venv\Scripts\activate.bat (cmd)
 #python -m pip install plotly  python3 -m pip install plotly  
 
+
 import streamlit as st
 import pandas as pd
 import plotly.express as px
 import os
 import datetime as dt
 
+st.markdown("""
+#### PROJETO FINAL DA DISCIPLINA DE VISUALIZAÇÕES DE DADOS. ALUNOS: PAULO PASSOS; THIAGO SANTOS; PAULO RAFAEL, HENRIQUE FRAZÃO.
+""")
 
 # Título do projeto
 st.title("📊 Acesso à Saúde no Brasil")
