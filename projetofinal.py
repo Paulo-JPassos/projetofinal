@@ -10,7 +10,7 @@ import os
 import datetime as dt
 
 # Título do dashboard
-st.title("Acesso a saúdeno Brasil")
+st.title("Acesso a saúde no Brasil")
 
 # Caminho do arquivo CSV na mesma pasta
 csv_file = "cnes_estabelecimentos.csv"
