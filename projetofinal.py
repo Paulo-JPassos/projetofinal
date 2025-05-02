@@ -60,3 +60,15 @@ fig1 = px.bar(x=contagem_estados.index, y=contagem_estados.values,
               labels={'x': 'UF', 'y': 'Quantidade de Unidades'},
               title='Quantidade de Unidades por Estado')
 st.plotly_chart(fig1)
+
+# 2. Gráfico de pizza - Proporção de unidades por estado
+fig2 = px.pie(values=contagem_estados.values, names=contagem_estados.index,
+              title='Proporção de Unidades por Estado')
+st.plotly_chart(fig2)
+
+
+# 3. Gráfico de dispersão - Quantidade de unidades por estado
+fig3 = px.scatter(x=contagem_estados.index, y=contagem_estados.values,
+                  labels={'x': 'UF', 'y': 'Quantidade de Unidades'},
+                  title='Distribuição de Unidades por Estado')
+st.plotly_chart(fig3)
