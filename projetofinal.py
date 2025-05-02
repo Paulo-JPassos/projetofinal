@@ -40,12 +40,16 @@ estado = st.selectbox("Selecione um estado para análise", sorted(ufs))
 
 df_estado = df[df["CO_UF"] == estado]
 
-# Gráfico 2: Categoria administrativa (privado, público, filantrópico)
-st.subheader(f"Distribuição por Categoria Administrativa - {estado}")
-if "DS_CATEGORIA_UNIDADE" in df_estado.columns:
-    categoria = df_estado["DS_CATEGORIA_UNIDADE"].value_counts().reset_index()
-    fig2 = px.pie(categoria, names="index", values="DS_CATEGORIA_UNIDADE", title="Categoria da Unidade")
-    st.plotly_chart(fig2, use_container_width=True)
-else:
-    st.info("Coluna de categoria administrativa não está disponível neste dataset.")
+# Criação de dicionário de UFs
+ufs = {
+    12: 'AC', 27: 'AL', 13: 'AM', 16: 'AP', 29: 'BA', 23: 'CE',
+    53: 'DF', 32: 'ES', 52: 'GO', 21: 'MA', 31: 'MG', 50: 'MS',
+    51: 'MT', 15: 'PA', 25: 'PB', 26: 'PE', 22: 'PI', 41: 'PR',
+    33: 'RJ', 24: 'RN', 43: 'RS', 11: 'RO', 14: 'RR', 42: 'SC',
+    28: 'SE', 35: 'SP', 17: 'TO'
+}
 
+df['UF'] = df['CO_UF'].map(ufs)
+
+# Título da seção
+st.header("Distribuição das Unidades por Estado")
