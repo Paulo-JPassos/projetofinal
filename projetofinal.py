@@ -128,7 +128,7 @@ st.plotly_chart(fig3)
 st.markdown("""
 ## 🧾 Conclusões e Reflexões
 
-- Os dados evidenciam uma concentração significativa de unidades em estados mais populosos, como São Paulo e Minas Gerais.
+- Os dados evidenciam uma concentração significativa de unidades em estados mais populosos do Nordeste, como, por exemplo, a Bahia.
 - A **esfera administrativa predominante** pode variar conforme a política pública local e o modelo de regionalização da saúde.
 - Com base na distribuição por **tipo de gestão**, é possível avaliar se há predominância do SUS ou se existe maior atuação da iniciativa privada em determinadas regiões.
 - O painel pode ser expandido futuramente para incluir indicadores de qualidade, capacidade de atendimento ou cruzamento com dados epidemiológicos regionais.
