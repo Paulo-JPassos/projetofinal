@@ -48,22 +48,18 @@ st.markdown("""
 Os dados foram carregados com sucesso a partir do arquivo **`cnes_estabelecimentos2.csv`**, contendo informações sobre os estabelecimentos de saúde em todo o território nacional.
 """)
 
-# Exibe amostra dos dados
-st.markdown("### 🔍 Primeiras linhas dos dados")
-
-     # Exibe os dados carregados
-st.markdown("### Dados de Vendas Carregados")
-st.dataframe(df.head(5))
 
 # Seleção de colunas principais
-colunas_utilizadas = [
+df_atual = [
     "CNES", "NO_FANTASIA", "TP_UNIDADE", "DS_TIPO_UNIDADE", "CO_MUNICIPIO_GESTOR", 
-    "NO_MUNICIPIO", "CO_UF", "NO_UF", "TP_ESTABELECIMENTO", "DS_TP_ESTABELECIMENTO",
+    "NO_MUNICIPIO", "CO_UF","ESTADO_UF", "NO_UF", "TP_ESTABELECIMENTO", "DS_TP_ESTABELECIMENTO",
     "TP_GESTAO", "DS_TP_GESTAO", "CO_CATEGORIA_UNIDADE", "DS_CATEGORIA_UNIDADE",
-    "DS_ESFERA_ADMINISTRATIVA"
+    "DS_TURNO_ATENDIMENTO", "DS_ESFERA_ADMINISTRATIVA", "CO_AMBULATORIAL_SUS"
 ]
 
-df = df[[col for col in colunas_utilizadas if col in df.columns]]
+
+
+#df = df[[col for col in colunas_utilizadas if col in df.columns]]
 
 st.markdown("""
 ## 🧹 Tratamento e Preparação dos Dados
@@ -73,20 +69,21 @@ Também realizamos o mapeamento dos códigos de UF para siglas, facilitando a le
 """)
 
 
-# Criação de dicionário de UFs
-ufs = {
-    12: 'AC', 27: 'AL', 13: 'AM', 16: 'AP', 29: 'BA', 23: 'CE',
-    53: 'DF', 32: 'ES', 52: 'GO', 21: 'MA', 31: 'MG', 50: 'MS',
-    51: 'MT', 15: 'PA', 25: 'PB', 26: 'PE', 22: 'PI', 41: 'PR',
-    33: 'RJ', 24: 'RN', 43: 'RS', 11: 'RO', 14: 'RR', 42: 'SC',
-    28: 'SE', 35: 'SP', 17: 'TO'
-}
-df['UF'] = df['CO_UF'].map(ufs)
+# Exibição dos dados
 
-# Filtro por estado
-ufs_disponiveis = df["CO_UF"].dropna().unique()
-estado = st.selectbox("Selecione um estado para análise", sorted(ufs_disponiveis))
-df_estado = df[df["CO_UF"] == estado]
+# Exibe amostra dos dados
+st.markdown("### 🔍 Primeiras linhas dos dados")
+
+     # Exibe os dados carregados
+st.markdown("### Dados de Vendas Carregados")
+
+opcao = st.selectbox("Escolha o Estado:", df['ESTADO_UF'].unique())
+df_filtrado = df[df["ESTADO_UF"] == opcao]
+st.dataframe(df_filtrado.head(10))
+
+
+#estado = st.selectbox("Selecione um estado para análise", sorted(ufs_disponiveis))
+#df_estado = df[df["CO_UF"] == estado]
 
 
 st.markdown("""
@@ -101,7 +98,7 @@ A seguir, são apresentados diversos gráficos interativos que ilustram a distri
 st.header("Distribuição das Unidades por Estado")
 
 # 1. Gráfico de barras
-contagem_estados = df['UF'].value_counts().sort_index()
+contagem_estados = df['ESTADO_UF'].value_counts().sort_index()
 fig1 = px.bar(x=contagem_estados.index, y=contagem_estados.values,
               labels={'x': 'UF', 'y': 'Quantidade de Unidades'},
               title='Quantidade de Unidades por Estado')
@@ -112,31 +109,22 @@ fig2 = px.pie(values=contagem_estados.values, names=contagem_estados.index,
               title='Proporção de Unidades por Estado')
 st.plotly_chart(fig2)
 
-# 3. Gráfico de dispersão
-fig3 = px.scatter(x=contagem_estados.index, y=contagem_estados.values,
-                  labels={'x': 'UF', 'y': 'Quantidade de Unidades'},
-                  title='Distribuição de Unidades por Estado')
+# 3. Gráfico de colunas
+contagem_turno = df['DS_TURNO_ATENDIMENTO'].value_counts().sort_index()
+
+# Criação do gráfico de colunas
+fig3 = px.bar(
+    x=contagem_turno.index,
+    y=contagem_turno.values,
+    labels={'x': 'Turno de Atendimento', 'y': 'Quantidade de Unidades'},
+    title='Unidades por Turno de Atendimento'
+)
+
+# Exibição do gráfico na barra lateral
 st.plotly_chart(fig3)
 
 
-st.markdown("""
-## 🌡️ Mapa de Calor: Estado x Esfera Administrativa
-
-Este mapa de calor cruza a **Unidade Federativa** com a **Esfera Administrativa** (Municipal, Estadual, Federal ou Privada), permitindo compreender como está distribuída a responsabilidade pela gestão das unidades em cada estado.
-""")
-
-# 4. Mapa de calor por Estado e Esfera Administrativa
-if "DS_ESFERA_ADMINISTRATIVA" in df.columns:
-    heatmap_data2 = df.groupby(["UF", "DS_ESFERA_ADMINISTRATIVA"]).size().reset_index(name='Quantidade')
-    fig4 = px.density_heatmap(heatmap_data2, 
-                              x="UF", y="DS_ESFERA_ADMINISTRATIVA", z="Quantidade", 
-                              color_continuous_scale="Blues",
-                              title="Mapa de Calor: Estado x Esfera Administrativa")
-    st.plotly_chart(fig4)
-else:
-    st.warning("Coluna 'DS_ESFERA_ADMINISTRATIVA' não encontrada nos dados.")
-
-    # Análise Final
+# Análise Final
 st.markdown("""
 ## 🧾 Conclusões e Reflexões
 
